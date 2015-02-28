@@ -101,6 +101,7 @@
                             }]
                         }
                     });
+                    document.getElementById("search_submit").disabled = false;
                     document.getElementById("submit").disabled = false;
                 });
             socket.on('loading followers',function(msg){
@@ -108,8 +109,12 @@
             });
             socket.on('loading posts',function(msg){
                 document.getElementById("posts").innerHTML =msg;
-            })
+            });
+            socket.on('no user',function(msg){
+                document.getElementById("search_submit").disabled = false;
+                document.getElementById("search").value="";
 
+            });
         function getdata(){
             document.getElementById("submit").disabled = true;
             document.getElementById("followers").innerHTML ="";
@@ -119,12 +124,17 @@
             socket.emit('instagram id',document.getElementById("insta_id").value);
 
         }
+            function getuserid(){
+                document.getElementById("search_submit").disabled = true;
+                socket.emit('username',document.getElementById("search").value)
+            }
 
         </script>
 	</head>
 	<body>
 
-<!-- Additional files for the Highslide popup effect -->
+    <input type="text" placeholder="username" id="search">
+    <input type="submit" id="search_submit" onclick="getuserid()"></body></br>
 <input type="text" placeholder="id" id="insta_id">
 <input type="submit" id="submit" onclick="getdata()">
 <h2 id="followers"></h2>

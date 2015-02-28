@@ -152,6 +152,19 @@ function completedposts(){
 function getDetailsofUser(id){
     ig.user_followers(id,{count:100},followercallback);
 }
+function getuserid(name){
+    ig.user_search(name, function(err, users, remaining, limit) {
+            for (var i = 0; i < users.length; i++) {
+                if(name==users[i].username){
+                    getDetailsofUser(users[0].id);
+                }else{
+                    event.emit("no such user");
+                }
+            }
+        event.emit('usernames',users)
+    });
+
+}
 
 /**
  * express route to ender the index.htm file
@@ -173,6 +186,13 @@ io.on('connection', function(socket){
     });
     event.on('loading followers',function(data){
         io.emit('loading followers',data);
+    });
+    event.on("no such user",function(){
+        io.emit("no user");
+    })
+    socket.on('username',function(name){
+        console.log(name);
+        getuserid(name);
     });
    socket.on('instagram id',function(id){
        console.log(id);
