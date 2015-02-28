@@ -113,7 +113,7 @@
             socket.on('no user',function(){
                 document.getElementById("search_submit").disabled = false;
                 document.getElementById("search").value="";
-                alert("No such username found");
+                document.getElementById("notfound").innerHTML ="no such user found";
 
             });
         function getdata(){
@@ -127,7 +127,9 @@
         }
             function getuserid(){
                 document.getElementById("search_submit").disabled = true;
-                socket.emit('username',document.getElementById("search").value)
+                socket.emit('username',document.getElementById("search").value);
+                document.getElementById("notfound").innerHTML ="";
+
             }
 
         </script>
@@ -135,7 +137,7 @@
 	<body>
 
     <input type="text" placeholder="username" id="search">
-    <input type="submit" id="search_submit" onclick="getuserid()"></body></br>
+    <input type="submit" id="search_submit" onclick="getuserid()"></body><h3 id="notfound"></h3></br>
 <input type="text" placeholder="id" id="insta_id">
 <input type="submit" id="submit" onclick="getdata()">
 <h2 id="followers"></h2>
