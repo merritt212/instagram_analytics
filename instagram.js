@@ -1,22 +1,49 @@
 /**
  * Created by pariskshitdutt on 28/02/15.
  */
+
+/**
+ * imports
+ */
+
 var EventEmitter = require('events').EventEmitter;
 var express=require('express');
-var app =express();
-app.use(express.static(__dirname + '/public'));
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
-
 var moment = require('moment');
 var ig = require('instagram-node').instagram();
-ig.use({ client_id: '0c6beda06dc446b7957d043957314ce7',
-    client_secret: '73021c83f4524af294858aa1af12588c' });
+
+/**
+ * express app made and an event emitter used for managing different events
+ */
+var app =express();
 var event = new EventEmitter();
-var followers=[];
+
+/**
+ * instagram client_id
+ */
+ig.use({ client_id: '0c6beda06dc446b7957d043957314ce7'});
+
+/**
+ * global variables
+ */
+var port=5000           //port on which the service will run
+var followers=[];       //store all the ids of the followers
+var posts=[];           //store the timestamp of all the posts
+var max_calls={};       //max_calls used for managing that too many pages are not crawled per follower
+var max_posts=5000;     //to prevent fetching too many posts limit on the number of posts to 5000
+var number=0;           //keep track of the number of follower data crawled
+var weekday = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];     //required to sort data according to day string
+
+/**
+ * callback for the followers call used in self repeating loop to fetch all followers
+ * @param err
+ * @param result
+ * @param pagination
+ * @param remaining
+ * @param limit
+ */
 var followercallback = function(err, result, pagination, remaining, limit) {
-    // Your implementation here
-    //console.log(remaining);
     for(var i=0;i<result.length;i++){
         followers.push(result[i].id);
     }
@@ -27,17 +54,23 @@ var followercallback = function(err, result, pagination, remaining, limit) {
         completedfollowers();
     }
 };
-var posts=[];
-var max_calls={}
+
+/**
+ * callback for the posts call and used in self repeating loop so that all posts are fetched the max_posts value to get maximum of 5000 posts so that too many posts are not crawled
+ * @param err
+ * @param medias
+ * @param pagination
+ * @param remaining
+ * @param limit
+ */
 var postscallback = function(err, medias, pagination, remaining, limit) {
-    // Your implementation here
     if(!err) {
         for (var i = 0; i < medias.length; i++) {
             posts.push(new Date(parseInt(medias[i].created_time) * 1000));
         }
         event.emit('loading posts',posts.length+" posts fetched");
 
-        if (pagination.next&&max_calls[this.id]<10&&posts.length<5000) {
+        if (pagination.next&&max_calls[this.id]<10&&posts.length<max_posts) {
             if(!max_calls[this.id]){
                 max_calls[this.id]=1;
             }else{
@@ -53,6 +86,9 @@ var postscallback = function(err, medias, pagination, remaining, limit) {
         completedposts();
     }
 };
+/**
+ * called when the crawling of followers is completed this starts the crawling for posts by the followers
+ */
 function completedfollowers(){
     console.log(followers.length);
     for(var i=0;i<followers.length;i++) {
@@ -60,19 +96,10 @@ function completedfollowers(){
     }
 
 }
-function getDetailsofUser(id){
-    ig.user_followers(id,{count:100},followercallback);
 
-}
-var number=0;
-var weekday = new Array(7);
-weekday[0]=  "Sunday";
-weekday[1] = "Monday";
-weekday[2] = "Tuesday";
-weekday[3] = "Wednesday";
-weekday[4] = "Thursday";
-weekday[5] = "Friday";
-weekday[6] = "Saturday";
+/**
+ * called on completion of crawl of the posts
+ */
 function completedposts(){
     number++;
     console.log(number);
@@ -117,9 +144,25 @@ function completedposts(){
         event.emit('done',{days:chartdays,time:charttime,best:bestDay+" at "+bestTime+" hours"});
     }
 }
+
+/**
+ * call to start the crawling process
+ * @param id
+ */
+function getDetailsofUser(id){
+    ig.user_followers(id,{count:100},followercallback);
+}
+
+/**
+ * express route to ender the index.htm file
+ */
 app.get('/', function(req, res){
     res.sendFile(__dirname +'/index.htm');
 });
+
+/**
+ * socket.io events to send and recieve data to the client side
+ */
 io.on('connection', function(socket){
     console.log("user connected");
     event.on('done',function(data){
@@ -137,10 +180,9 @@ io.on('connection', function(socket){
        posts=[];
        max_calls={};
        followers=[];
-
        getDetailsofUser(id);
    })
 });
-http.listen(3000, function(){
-    console.log('listening on *:3000');
+http.listen(port, function(){
+    console.log('listening on *:'+port);
 });
