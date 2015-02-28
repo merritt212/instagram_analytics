@@ -8,7 +8,6 @@
 
 var EventEmitter = require('events').EventEmitter;
 var express=require('express');
-var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var moment = require('moment');
 var ig = require('instagram-node').instagram();
@@ -17,6 +16,7 @@ var ig = require('instagram-node').instagram();
  * express app made and an event emitter used for managing different events
  */
 var app =express();
+var http = require('http').Server(app);
 var event = new EventEmitter();
 
 /**
@@ -183,6 +183,6 @@ io.on('connection', function(socket){
        getDetailsofUser(id);
    })
 });
-http.listen(port, function(){
+http.listen(3000, function(){
     console.log('listening on *:'+port);
 });
