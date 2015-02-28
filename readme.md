@@ -8,3 +8,5 @@ installation instructions
         ctrl+a+d
 
 the server is now running on a screen on port 5000 and you can access idt like ip:5000
+
+the service is running on http://104.236.41.58:5000/
