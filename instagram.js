@@ -153,6 +153,10 @@ function getDetailsofUser(id){
     ig.user_followers(id,{count:100},followercallback);
 }
 function getuserid(name){
+    number=0;
+    posts=[];
+    max_calls={};
+    followers=[];
     ig.user_search(name, function(err, users, remaining, limit) {
         var found=false;
             for (var i = 0; i < users.length; i++) {
@@ -198,10 +202,6 @@ io.on('connection', function(socket){
     });
    socket.on('instagram id',function(id){
        console.log(id);
-       number=0;
-       posts=[];
-       max_calls={};
-       followers=[];
        getDetailsofUser(id);
    })
 });
