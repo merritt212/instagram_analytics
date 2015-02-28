@@ -110,7 +110,7 @@
             socket.on('loading posts',function(msg){
                 document.getElementById("posts").innerHTML =msg;
             });
-            socket.on('no user',function(msg){
+            socket.on('no user',function(){
                 document.getElementById("search_submit").disabled = false;
                 document.getElementById("search").value="";
                 alert("No such username found");

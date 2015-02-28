@@ -154,14 +154,16 @@ function getDetailsofUser(id){
 }
 function getuserid(name){
     ig.user_search(name, function(err, users, remaining, limit) {
+        var found=false;
             for (var i = 0; i < users.length; i++) {
                 if(name==users[i].username){
                     getDetailsofUser(users[0].id);
-                }else{
-                    event.emit("no such user");
+                    found=true;
                 }
             }
-        event.emit('usernames',users)
+        if(!found)
+        event.emit("no such user");
+
     });
 
 }
