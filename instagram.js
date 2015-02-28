@@ -20,9 +20,9 @@ var app =express();
 var event = new EventEmitter();
 
 /**
- * instagram client_id
+ * instagram client_id and secret
  */
-ig.use({ client_id: '0c6beda06dc446b7957d043957314ce7'});
+ig.use({ client_id: '0c6beda06dc446b7957d043957314ce7', client_secret: '73021c83f4524af294858aa1af12588c' });
 
 /**
  * global variables
