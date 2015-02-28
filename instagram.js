@@ -183,6 +183,6 @@ io.on('connection', function(socket){
        getDetailsofUser(id);
    })
 });
-http.listen(3000, function(){
+http.listen(port, function(){
     console.log('listening on *:'+port);
 });
