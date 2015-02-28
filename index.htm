@@ -113,6 +113,7 @@
             socket.on('no user',function(msg){
                 document.getElementById("search_submit").disabled = false;
                 document.getElementById("search").value="";
+                alert("No such username found");
 
             });
         function getdata(){
