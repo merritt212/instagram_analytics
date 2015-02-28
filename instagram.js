@@ -1,35 +1,6 @@
 /**
  * Created by pariskshitdutt on 28/02/15.
  */
-//var Instagram = require('instagram-node-lib');
-//
-//Instagram.set('client_id', '33b99d18d174420d8d4f1cdafb6463eb');
-//Instagram.set('client_secret', '804d2cea0a5a43ba8f57b51b52f03168');
-//var followers_ids=[];
-//followers();
-//function followers(pagination) {
-//    console.log(pagination);
-//    Instagram.users.followed_by({
-//        user_id: 6302094,
-//        cursor:pagination,
-//        complete: function (data, pagination) {
-//            // data is a javascript object/array/null matching that shipped Instagram
-//            // when available (mostly /recent), pagination is a javascript object with the pagination information
-//            for(var i=0;i<data.length;i++){
-//                followers_ids.push(data[i].id);
-//            }
-//            console.log(pagination,data.length);
-//            followers(pagination.next_cursor);
-//
-//        },
-//        error: function (errorMessage, errorObject, caller) {
-//            // errorMessage is the raised error message
-//            // errorObject is either the object that caused the issue, or the nearest neighbor
-//            // caller is the method in which the error occurred
-//            console.log(errorMessage);
-//        }
-//    });
-//}
 var EventEmitter = require('events').EventEmitter;
 var express=require('express');
 var app =express();
