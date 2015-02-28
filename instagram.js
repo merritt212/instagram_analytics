@@ -31,7 +31,7 @@ var port=5000           //port on which the service will run
 var followers=[];       //store all the ids of the followers
 var posts=[];           //store the timestamp of all the posts
 var max_calls={};       //max_calls used for managing that too many pages are not crawled per follower
-var max_posts=5000;     //to prevent fetching too many posts limit on the number of posts to 5000
+var max_posts=10000;     //to prevent fetching too many posts limit on the number of posts to 5000
 var number=0;           //keep track of the number of follower data crawled
 var weekday = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];     //required to sort data according to day string
 
