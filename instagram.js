@@ -69,16 +69,18 @@ var postscallback = function(err, medias, pagination, remaining, limit) {
         }
 
         if (pagination.next) {
-            pagination.next(postscallback.bind({id:this.id,posts:this.posts,number:this.number,user_id:this.user_id,res:this.res})); // Will get second page results
+            pagination.next(postscallback.bind({id:this.id,completed:this.completed,total:this.total,posts:this.posts,user_id:this.user_id,res:this.res})); // Will get second page results
         } else {
-            //console.log(this.i);
-            if(this.number==this.total)
-            completedposts(this.posts,this.user_id,this.res);
+            this.completed.push(this.id);
+            console.log(this.completed.length,this.total);
+            if(this.completed.length==this.total)
+            completedposts(this.posts,this.user_id,this.total,this.res);
         }
     }else{
         console.log(err);
-        if(this.number==this.total)
-            completedposts(this.posts,this.user_id,this.res);
+        this.completed.push(this.id);
+        if(this.completed.length==this.total)
+            completedposts(this.posts,this.user_id,this.total,this.res);
     }
 };
 /**
@@ -86,8 +88,9 @@ var postscallback = function(err, medias, pagination, remaining, limit) {
  */
 function completedfollowers(followers,posts,user_id,res){
     console.log("followers completed "+this.user_id,followers.length);
+    var completed=[]
     for(var i=0;i<followers.length;i++) {
-        ig.user_media_recent(followers[i],{count:100}, postscallback.bind({id:followers[i],total:(followers.length-1),posts:posts,number:i,user_id:user_id,res:res}));
+        ig.user_media_recent(followers[i],{count:100}, postscallback.bind({id:followers[i],completed:completed,total:followers.length,count:0,posts:posts,user_id:user_id,res:res}));
     }
 
 }
@@ -95,7 +98,7 @@ function completedfollowers(followers,posts,user_id,res){
 /**
  * called on completion of crawl of the posts
  */
-function completedposts(posts,user_id,res){
+function completedposts(posts,user_id,total,res){
         var post_days={};
         var post_time={};
         for (var i = 0; i < posts.length; i++) {
@@ -133,7 +136,7 @@ function completedposts(posts,user_id,res){
         }
         console.log(chartdays);
         console.log(charttime);
-        res.json({days:chartdays,time:charttime,best:bestDay+" at "+bestTime+" hours"});
+        res.json({total_posts:posts.length,followers:total,days:chartdays,time:charttime,best:bestDay+" at "+bestTime+" hours"});
         //res.end();
 }
 

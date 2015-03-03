@@ -72,6 +72,9 @@
             function initiatecharts(msg){
                 document.getElementById("loading").innerHTML ="";
                 document.getElementById("best").innerHTML ="best time to post "+msg.best;
+                document.getElementById("followers").innerHTML ="total followers "+msg.followers;
+                document.getElementById("posts").innerHTML ="total posts "+msg.total_posts;
+
                 var chart1=AmCharts.makeChart("container", {
                     "type": "serial",
                     "theme": "none",
@@ -162,8 +165,11 @@
 <input type="text" placeholder="id" id="insta_id">
 <input type="submit" id="submit" onclick="getdata()">
 <h2 id="loading"></h2>
+    <h2 id="followers"></h2>
+    <h2 id="posts"></h2>
 
-<h2 id="best"></h2>
+
+    <h2 id="best"></h2>
 <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
 <div id="container2" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
 
