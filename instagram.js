@@ -16,7 +16,7 @@ var ig = require('instagram-node').instagram();
  */
 var app =express();
 var http = require('http').Server(app);
-var io = require('socket.io')(http);
+//var io = require('socket.io')(http);
 var event = new EventEmitter();
 
 /**
@@ -188,32 +188,32 @@ app.get('/instagram/name/:name',function(req,res){
 
 })
 
-/**
- * socket.io events to send and recieve data to the client side
- */
-io.on('connection', function(socket){
-   console.log("user connected");
-   event.on('done',function(data){
-        io.emit('init',data);
-   });
-   event.on('loading posts',function(data){
-        io.emit('loading posts',data);
-   });
-   event.on('loading followers',function(data){
-        io.emit('loading followers',data);
-   });
-   event.on("no such user",function(){
-        io.emit("no user");
-   });
-   socket.on('username',function(name){
-        console.log(name);
-        getuserid(name);
-   });
-   socket.on('instagram id',function(id){
-       console.log(id);
-       getDetailsofUser(id);
-   });
-});
+///**
+// * socket.io events to send and recieve data to the client side
+// */
+//io.on('connection', function(socket){
+//   console.log("user connected");
+//   event.on('done',function(data){
+//        io.emit('init',data);
+//   });
+//   event.on('loading posts',function(data){
+//        io.emit('loading posts',data);
+//   });
+//   event.on('loading followers',function(data){
+//        io.emit('loading followers',data);
+//   });
+//   event.on("no such user",function(){
+//        io.emit("no user");
+//   });
+//   socket.on('username',function(name){
+//        console.log(name);
+//        getuserid(name);
+//   });
+//   socket.on('instagram id',function(id){
+//       console.log(id);
+//       getDetailsofUser(id);
+//   });
+//});
 http.listen(port, function(){
     console.log('listening on *:'+port);
 });
