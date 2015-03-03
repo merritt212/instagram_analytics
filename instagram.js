@@ -15,7 +15,6 @@ var ig = require('instagram-node').instagram();
  * express app made and an event emitter used for managing different events
  */
 var app =express();
-app.use(jsonStream());
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var event = new EventEmitter();
@@ -40,6 +39,11 @@ var weekday = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Satu
  * @param limit
  */
 var followercallback = function(err, result, pagination, remaining, limit) {
+    if(err){
+        this.res.json({error:"wrong id"})
+        return;
+    }
+
     for(var i=0;i<result.length;i++){
         this.followers.push(result[i].id);
     }
@@ -141,7 +145,7 @@ function getDetailsofUser(id,followers,posts,res){
     ig.user_followers(id,{count:100},followercallback.bind({user_id:id,followers:followers,posts:posts,res:res}));
 }
 
-function getuserid(name){
+function getuserid(name,followers,posts,res){
     //var number=0;
     //var posts=[];
     //var followers=[];
@@ -149,14 +153,14 @@ function getuserid(name){
         var found=false;
             for (var i = 0; i < users.length; i++) {
                 if(name==users[i].username){
-                    getDetailsofUser(users[0].id);
+                    getDetailsofUser(users[0].id,this.followers,this.posts,this.res);
                     found=true;
                 }
             }
         if(!found)
-        event.emit("no such user");
+        res.json({error:"no such user"})
 
-    });
+    }.bind({followers:followers,posts:posts,res:res}));
 
 }
 
@@ -173,6 +177,14 @@ app.get('/instagram/:id',function(req,res){
     var posts=[];           //store the timestamp of all the posts
     req.socket.setTimeout(Infinity);
     getDetailsofUser(req.params.id,followers,posts,res);
+
+});
+app.get('/instagram/name/:name',function(req,res){
+    console.log(req.params.id);
+    var followers=[];       //store all the ids of the followers
+    var posts=[];           //store the timestamp of all the posts
+    req.socket.setTimeout(Infinity);
+    getuserid(req.params.name,followers,posts,res);
 
 })
 

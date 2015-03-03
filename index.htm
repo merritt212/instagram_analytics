@@ -38,99 +38,119 @@
 //            });
         function getdata(){
             document.getElementById("submit").disabled = true;
-            document.getElementById("followers").innerHTML ="";
-            document.getElementById("posts").innerHTML ="";
             document.getElementById("best").innerHTML ="";
+            document.getElementById("loading").innerHTML ="loading";
+            document.getElementById("notfound").innerHTML ="";
+            document.getElementById("search_submit").disabled = true;
             $.get( '/instagram/'+document.getElementById("insta_id").value, { name: "John", time: "2pm" } )
                     .done(function( msg ) {
 //                        alert( "Data Loaded: " + data );
-                        document.getElementById("best").innerHTML ="best time to post "+msg.best;
-                        var chart1=AmCharts.makeChart("container", {
-                            "type": "serial",
-                            "theme": "none",
-                            "dataProvider": msg.days,
-                            "valueAxes": [{
-                                "gridColor":"#FFFFFF",
-                                "gridAlpha": 0.2,
-                                "dashLength": 0
-                            }],
-                            "gridAboveGraphs": true,
-                            "startDuration": 1,
-                            "graphs": [{
-                                "balloonText": "[[category]]: <b>[[value]]</b>",
-                                "fillAlphas": 0.8,
-                                "lineAlpha": 0.2,
-                                "type": "column",
-                                "valueField": "count"
-                            }],
-                            "chartCursor": {
-                                "categoryBalloonEnabled": false,
-                                "cursorAlpha": 0,
-                                "zoomable": false
-                            },
-                            "categoryField": "day",
-                            "categoryAxis": {
-                                "gridPosition": "start",
-                                "gridAlpha": 0,
-                                "tickPosition":"start",
-                                "tickLength":20
-                            },
-                            "exportConfig":{
-                                "menuTop": 0,
-                                "menuItems": [{
-                                    "icon": '/lib/3/images/export.png',
-                                    "format": 'png'
-                                }]
-                            }
-                        });
-
-                        var chart2=AmCharts.makeChart("container2", {
-                            "type": "serial",
-                            "theme": "none",
-                            "dataProvider": msg.time,
-                            "valueAxes": [{
-                                "gridColor":"#FFFFFF",
-                                "gridAlpha": 0.2,
-                                "dashLength": 0
-                            }],
-                            "gridAboveGraphs": true,
-                            "startDuration": 1,
-                            "graphs": [{
-                                "balloonText": "[[category]]: <b>[[value]]</b>",
-                                "fillAlphas": 0.8,
-                                "lineAlpha": 0.2,
-                                "type": "column",
-                                "valueField": "count"
-                            }],
-                            "chartCursor": {
-                                "categoryBalloonEnabled": false,
-                                "cursorAlpha": 0,
-                                "zoomable": false
-                            },
-                            "categoryField": "time",
-                            "categoryAxis": {
-                                "gridPosition": "start",
-                                "gridAlpha": 0,
-                                "tickPosition":"start",
-                                "tickLength":20
-                            },
-                            "exportConfig":{
-                                "menuTop": 0,
-                                "menuItems": [{
-                                    "icon": '/lib/3/images/export.png',
-                                    "format": 'png'
-                                }]
-                            }
-                        });
-                        document.getElementById("search_submit").disabled = false;
-                        document.getElementById("submit").disabled = false;
+                        if(!msg.error){
+                            initiatecharts(msg);
+                        }else{
+                            document.getElementById("notfound").innerHTML ="no such user";
+                        }
                     });
         }
             function getuserid(){
                 document.getElementById("search_submit").disabled = true;
-                socket.emit('username',document.getElementById("search").value);
+                document.getElementById("best").innerHTML ="";
+                document.getElementById("loading").innerHTML ="loading";
                 document.getElementById("notfound").innerHTML ="";
+                $.get( '/instagram/name/'+document.getElementById("search").value )
+                        .done(function( msg ) {
+//                        alert( "Data Loaded: " + data );
+                            if(!msg.error){
+                                initiatecharts(msg);
+                            }else{
+                                document.getElementById("notfound").innerHTML ="no such user";
+                            }
 
+                        });
+
+            }
+            function initiatecharts(msg){
+                document.getElementById("loading").innerHTML ="";
+                document.getElementById("best").innerHTML ="best time to post "+msg.best;
+                var chart1=AmCharts.makeChart("container", {
+                    "type": "serial",
+                    "theme": "none",
+                    "dataProvider": msg.days,
+                    "valueAxes": [{
+                        "gridColor":"#FFFFFF",
+                        "gridAlpha": 0.2,
+                        "dashLength": 0
+                    }],
+                    "gridAboveGraphs": true,
+                    "startDuration": 1,
+                    "graphs": [{
+                        "balloonText": "[[category]]: <b>[[value]]</b>",
+                        "fillAlphas": 0.8,
+                        "lineAlpha": 0.2,
+                        "type": "column",
+                        "valueField": "count"
+                    }],
+                    "chartCursor": {
+                        "categoryBalloonEnabled": false,
+                        "cursorAlpha": 0,
+                        "zoomable": false
+                    },
+                    "categoryField": "day",
+                    "categoryAxis": {
+                        "gridPosition": "start",
+                        "gridAlpha": 0,
+                        "tickPosition":"start",
+                        "tickLength":20
+                    },
+                    "exportConfig":{
+                        "menuTop": 0,
+                        "menuItems": [{
+                            "icon": '/lib/3/images/export.png',
+                            "format": 'png'
+                        }]
+                    }
+                });
+
+                var chart2=AmCharts.makeChart("container2", {
+                    "type": "serial",
+                    "theme": "none",
+                    "dataProvider": msg.time,
+                    "valueAxes": [{
+                        "gridColor":"#FFFFFF",
+                        "gridAlpha": 0.2,
+                        "dashLength": 0
+                    }],
+                    "gridAboveGraphs": true,
+                    "startDuration": 1,
+                    "graphs": [{
+                        "balloonText": "[[category]]: <b>[[value]]</b>",
+                        "fillAlphas": 0.8,
+                        "lineAlpha": 0.2,
+                        "type": "column",
+                        "valueField": "count"
+                    }],
+                    "chartCursor": {
+                        "categoryBalloonEnabled": false,
+                        "cursorAlpha": 0,
+                        "zoomable": false
+                    },
+                    "categoryField": "time",
+                    "categoryAxis": {
+                        "gridPosition": "start",
+                        "gridAlpha": 0,
+                        "tickPosition":"start",
+                        "tickLength":20
+                    },
+                    "exportConfig":{
+                        "menuTop": 0,
+                        "menuItems": [{
+                            "icon": '/lib/3/images/export.png',
+                            "format": 'png'
+                        }]
+                    }
+                });
+                document.getElementById("search_submit").disabled = false;
+                document.getElementById("submit").disabled = false;
             }
 
         </script>
@@ -141,8 +161,7 @@
     <input type="submit" id="search_submit" onclick="getuserid()"></body><h3 id="notfound"></h3></br>
 <input type="text" placeholder="id" id="insta_id">
 <input type="submit" id="submit" onclick="getdata()">
-<h2 id="followers"></h2>
-<h2 id="posts"></h2>
+<h2 id="loading"></h2>
 
 <h2 id="best"></h2>
 <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
