@@ -18,6 +18,7 @@ var app =express();
 var http = require('http').Server(app);
 //var io = require('socket.io')(http);
 var event = new EventEmitter();
+app.use("/public", express.static(__dirname + '/public'));
 
 /**
  * instagram client_id and secret
@@ -47,6 +48,8 @@ var followercallback = function(err, result, pagination, remaining, limit) {
     for(var i=0;i<result.length;i++){
         this.followers.push(result[i].id);
     }
+    this.res.write('event: followers\n');
+    this.res.write('data:'+this.followers.length+'\n\n');
     if(pagination.next) {
         pagination.next(followercallback.bind({user_id:this.user_id,followers:this.followers,posts:this.posts,res:this.res})); // Will get second page results
     }else{
@@ -67,7 +70,9 @@ var postscallback = function(err, medias, pagination, remaining, limit) {
         for (var i = 0; i < medias.length; i++) {
             this.posts.push(new Date(parseInt(medias[i].created_time) * 1000));
         }
-
+        console.log(this.posts.length);
+        this.res.write('event: posts\n');
+        this.res.write('data:'+this.posts.length+'\n\n');
         if (pagination.next) {
             pagination.next(postscallback.bind({id:this.id,completed:this.completed,total:this.total,posts:this.posts,user_id:this.user_id,res:this.res})); // Will get second page results
         } else {
@@ -136,7 +141,9 @@ function completedposts(posts,user_id,total,res){
         }
         console.log(chartdays);
         console.log(charttime);
-        res.json({total_posts:posts.length,followers:total,days:chartdays,time:charttime,best:bestDay+" at "+bestTime+" hours"});
+        var data={total_posts:posts.length,followers:total,days:chartdays,time:charttime,best:bestDay+" at "+bestTime+" hours"}
+        res.write('event: graph\n');
+        res.write('data:'+JSON.stringify(data)+'\n\n');
         //res.end();
 }
 
@@ -179,6 +186,15 @@ app.get('/instagram/:id',function(req,res){
     var followers=[];       //store all the ids of the followers
     var posts=[];           //store the timestamp of all the posts
     req.socket.setTimeout(Infinity);
+    res.writeHead(200, {
+        'Content-Type': 'text/event-stream;charset=UTF-8',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive'
+    });
+    req.on("close", function() {
+        console.log("closed");
+    });
+    //res.end();
     getDetailsofUser(req.params.id,followers,posts,res);
 
 });
@@ -187,6 +203,14 @@ app.get('/instagram/name/:name',function(req,res){
     var followers=[];       //store all the ids of the followers
     var posts=[];           //store the timestamp of all the posts
     req.socket.setTimeout(Infinity);
+    res.writeHead(200, {
+        'Content-Type': 'text/event-stream;charset=UTF-8',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive'
+    });
+    req.on("close", function() {
+        console.log("closed");
+    });
     getuserid(req.params.name,followers,posts,res);
 
 })
